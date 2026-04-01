@@ -76,7 +76,8 @@ def boundary(
             try:
                 output_model.model_validate(result if isinstance(result, dict) else {"__invalid__": result})
             except ValidationError as e:
-                raise ContractViolationError(name, "output", e.errors()) from e
+                error_details = [dict(item) for item in e.errors()]
+                raise ContractViolationError(name, "output", error_details) from e
 
         def _finalize(start: float, success: bool, error_msg: str | None) -> None:
             registry.record_call(name, success)

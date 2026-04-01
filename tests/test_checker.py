@@ -1,6 +1,5 @@
 """Tests for check_compatibility and check_breaking_changes."""
 
-import pytest
 from pydantic import BaseModel, Field
 
 from data_contracts import BoundaryModel, check_compatibility
@@ -133,11 +132,7 @@ class TestCheckBreakingChanges:
         assert len(new_required) == 1
         assert new_required[0].field == "category"
 
-
 # --- CLI tests ---
-
-import subprocess
-import sys
 
 
 class TestMatrixCLI:
@@ -187,8 +182,6 @@ class TestMatrixCLI:
     def test_matrix_empty_registry(self):
         """matrix with no boundaries prints informative message."""
         from data_contracts.registry import ContractRegistry
-        from io import StringIO
-        import contextlib
 
         reg = ContractRegistry.__new__(ContractRegistry)
         reg._boundaries = {}

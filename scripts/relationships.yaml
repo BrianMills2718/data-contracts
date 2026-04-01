@@ -1,0 +1,87 @@
+# Linkage graph for data_contracts' shared boundary-contract role.
+
+required_reading:
+  defaults:
+    - CLAUDE.md
+    - README.md
+    - docs/plans/CLAUDE.md
+
+governance: []
+couplings:
+  - sources:
+      - "CLAUDE.md"
+      - "README.md"
+      - "docs/plans/CLAUDE.md"
+      - "docs/ops/CAPABILITY_DECOMPOSITION.md"
+      - "meta-process.yaml"
+      - "scripts/relationships.yaml"
+    docs:
+      - "README.md"
+      - "docs/plans/CLAUDE.md"
+      - "docs/ops/CAPABILITY_DECOMPOSITION.md"
+    description: "Top-level boundary, ownership, and rollout surfaces must stay aligned."
+    why: "These files jointly define the repo boundary, local ownership source, and governed-rollout contract."
+  - sources:
+      - "src/data_contracts/*.py"
+      - "tests/**/*.py"
+    docs:
+      - "README.md"
+      - "CLAUDE.md"
+      - "docs/ops/CAPABILITY_DECOMPOSITION.md"
+    description: "Shared boundary-contract primitives must stay aligned with the reusable library contract."
+    why: "These files define the typed boundary substrate exported to other repos and the boundaries that keep it from absorbing project-specific workflows."
+  - sources:
+      - "Makefile"
+      - "scripts/*.py"
+      - "scripts/meta/*.py"
+      - ".claude/settings.json"
+      - ".claude/hooks/*.sh"
+      - "meta-process.yaml"
+    docs:
+      - "CLAUDE.md"
+      - "docs/plans/CLAUDE.md"
+      - "docs/plans/01_governed-baseline-and-capability-ownership-rollout.md"
+    description: "Governance helper surfaces must stay aligned with the local workflow contract."
+    why: "These files define how the repo participates in the governed baseline and ownership program without silently enabling sanctioned worktrees."
+architecture:
+  - sources:
+      - "src/data_contracts/*.py"
+      - "tests/**/*.py"
+    current:
+      - "README.md"
+      - "CLAUDE.md"
+    target:
+      - "docs/ops/CAPABILITY_DECOMPOSITION.md"
+    plan_refs:
+      - "docs/plans/01_governed-baseline-and-capability-ownership-rollout.md"
+  - sources:
+      - "Makefile"
+      - "scripts/*.py"
+      - "scripts/meta/*.py"
+      - ".claude/settings.json"
+      - ".claude/hooks/*.sh"
+      - "meta-process.yaml"
+    current:
+      - "CLAUDE.md"
+      - "docs/plans/CLAUDE.md"
+    target:
+      - "docs/plans/01_governed-baseline-and-capability-ownership-rollout.md"
+      - "docs/ops/CAPABILITY_DECOMPOSITION.md"
+adrs: {}
+
+# Optional scoped file coverage policy.
+# - managed: files under managed include that are NOT explicitly registered
+#   in governance/couplings/architecture will trigger policy actions.
+# - unmanaged: files outside managed scope.
+#
+# Set managed.mode: hard-fail to require an explicit registration for every
+# managed file before edits are allowed. Set managed.mode: warn to log soft warnings
+# instead. Keep generated/large directories out of scope with managed.exclude.
+#
+# file_scope:
+#   managed:
+#     include: ["**"]
+#     exclude: [".venv/**", "generated/**"]
+#     mode: warn
+#   unmanaged:
+#     mode: ignore

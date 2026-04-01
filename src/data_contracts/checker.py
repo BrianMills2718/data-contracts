@@ -13,7 +13,8 @@ from data_contracts.models import ContractViolation
 def _get_json_type(prop: dict[str, Any]) -> str | None:
     """Extract the JSON schema type string from a property definition."""
     if "type" in prop:
-        return prop["type"]
+        prop_type = prop["type"]
+        return prop_type if isinstance(prop_type, str) else None
     if "anyOf" in prop:
         types = [t.get("type") for t in prop["anyOf"] if "type" in t]
         return "|".join(sorted(types)) if types else None

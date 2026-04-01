@@ -2,11 +2,9 @@
 
 import json
 
-import pytest
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from data_contracts import BoundaryModel, ContractRegistry
-from data_contracts.models import ContractInfo
 
 
 class SampleModel(BoundaryModel):
