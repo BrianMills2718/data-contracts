@@ -1,6 +1,8 @@
 """ContractRegistry -- singleton tracking all registered boundaries.
 
 Auto-populated by @boundary decorator at import time. Persists to JSON.
+Supports composability queries: find compatible producers/consumers and
+validate multi-step pipelines.
 """
 
 from __future__ import annotations
@@ -11,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from data_contracts.models import ContractInfo
+from data_contracts.models import ContractInfo, ContractViolation
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +92,106 @@ class ContractRegistry:
     def list_by_consumer(self, consumer: str) -> list[ContractInfo]:
         """List boundaries that a given project consumes from."""
         return [b for b in self._boundaries.values() if consumer in b.consumers]
+
+    def get_compatible_consumers(self, boundary_name: str) -> list[ContractInfo]:
+        """Find boundaries whose input_schema is compatible with this boundary's output.
+
+        Given a boundary name, returns all other boundaries that could consume
+        this boundary's output without schema violations.
+        """
+        from data_contracts.checker import check_compatibility
+
+        source = self._boundaries.get(boundary_name)
+        if not source or not source.output_schema:
+            return []
+
+        compatible: list[ContractInfo] = []
+        for name, info in self._boundaries.items():
+            if name == boundary_name or not info.input_schema:
+                continue
+            violations = check_compatibility(
+                source.output_schema, info.input_schema,
+                producer_name=boundary_name, consumer_name=name,
+            )
+            if not violations:
+                compatible.append(info)
+        return compatible
+
+    def get_compatible_producers(self, boundary_name: str) -> list[ContractInfo]:
+        """Find boundaries whose output_schema is compatible with this boundary's input.
+
+        Given a boundary name, returns all other boundaries whose output could
+        feed this boundary's input without schema violations.
+        """
+        from data_contracts.checker import check_compatibility
+
+        target = self._boundaries.get(boundary_name)
+        if not target or not target.input_schema:
+            return []
+
+        compatible: list[ContractInfo] = []
+        for name, info in self._boundaries.items():
+            if name == boundary_name or not info.output_schema:
+                continue
+            violations = check_compatibility(
+                info.output_schema, target.input_schema,
+                producer_name=name, consumer_name=boundary_name,
+            )
+            if not violations:
+                compatible.append(info)
+        return compatible
+
+    def validate_pipeline(self, steps: list[str]) -> list[ContractViolation]:
+        """Validate that an ordered list of boundaries forms a compatible pipeline.
+
+        Checks that each step's output_schema is compatible with the next step's
+        input_schema. Returns all violations found across the chain.
+        """
+        from data_contracts.checker import check_compatibility
+
+        violations: list[ContractViolation] = []
+        for i in range(len(steps) - 1):
+            producer_name = steps[i]
+            consumer_name = steps[i + 1]
+            producer = self._boundaries.get(producer_name)
+            consumer = self._boundaries.get(consumer_name)
+
+            if not producer:
+                violations.append(ContractViolation(
+                    producer=producer_name, consumer=consumer_name,
+                    field="(boundary)", kind="missing_boundary",
+                    detail=f"Boundary '{producer_name}' not found in registry",
+                ))
+                continue
+            if not consumer:
+                violations.append(ContractViolation(
+                    producer=producer_name, consumer=consumer_name,
+                    field="(boundary)", kind="missing_boundary",
+                    detail=f"Boundary '{consumer_name}' not found in registry",
+                ))
+                continue
+            if not producer.output_schema:
+                violations.append(ContractViolation(
+                    producer=producer_name, consumer=consumer_name,
+                    field="(schema)", kind="missing_schema",
+                    detail=f"Boundary '{producer_name}' has no output_schema",
+                ))
+                continue
+            if not consumer.input_schema:
+                violations.append(ContractViolation(
+                    producer=producer_name, consumer=consumer_name,
+                    field="(schema)", kind="missing_schema",
+                    detail=f"Boundary '{consumer_name}' has no input_schema",
+                ))
+                continue
+
+            step_violations = check_compatibility(
+                producer.output_schema, consumer.input_schema,
+                producer_name=producer_name, consumer_name=consumer_name,
+            )
+            violations.extend(step_violations)
+
+        return violations
 
     def record_call(self, name: str, success: bool) -> None:
         """Record a boundary call for tracking."""
