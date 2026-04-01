@@ -1,0 +1,21 @@
+[project]
+name = "data_contracts"
+version = "0.1.0"
+description = "Typed data contracts for cross-project boundaries — @boundary decorator, BoundaryModel, BoundaryRegistry"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "ruff", "mypy"]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[tool.ruff]
+line-length = 120
+
+[tool.mypy]
+strict = true
