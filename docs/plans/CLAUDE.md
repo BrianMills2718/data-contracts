@@ -6,7 +6,7 @@ Track all implementation work here.
 
 | # | Name | Priority | Status | Blocks |
 |---|------|----------|--------|--------|
-| 1 | [Governed baseline and capability ownership rollout](01_governed-baseline-and-capability-ownership-rollout.md) | High | 🚧 In Progress | - |
+| 1 | [Governed baseline and capability ownership rollout](01_governed-baseline-and-capability-ownership-rollout.md) | High | ✅ Complete | - |
 
 ## Status Key
 

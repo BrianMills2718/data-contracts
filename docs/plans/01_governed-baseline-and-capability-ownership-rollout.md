@@ -1,6 +1,25 @@
 # Plan 01: governed baseline and capability ownership rollout
 
-**Status:** 🚧 In Progress
+**Status:** ✅ Complete
+**Verified:** 2026-04-01T22:35:16Z
+**Verification Evidence:**
+```yaml
+timestamp: 2026-04-01T22:35:16Z
+tests:
+  unit: 51 passed in 5.45s
+  lint: ruff check src tests
+  types: mypy src
+  local_gate: make check
+  governance:
+    - make plan-sync
+    - make agents-sync
+    - make markdown-links
+    - project-meta/scripts/meta/audit_governed_repo.py --repo-root . --json
+notes:
+  - installer established the mechanical governed baseline
+  - installer-added sanctioned worktree entrypoints were removed to keep worktrees out of scope
+  - a small real lint/type debt was fixed so the local check surface is truthful
+```
 **Priority:** High
 **Blocked By:** None
 **Blocks:** truthful governed baseline and shared capability ownership for `data_contracts`
@@ -76,7 +95,7 @@ consumers accumulate around it.
 | 2 | Normalize `CLAUDE.md` to the shared renderer contract and add a truthful contributor entry surface | Complete |
 | 3 | Run the shared governed-repo installer in this clean worktree | Complete |
 | 4 | Re-audit and do one bounded manual followthrough for ownership, linkage, and README/Makefile gaps | Complete |
-| 5 | Verify, document uncertainties, and close the wave without enabling sanctioned worktrees | Not started |
+| 5 | Verify, document uncertainties, and close the wave without enabling sanctioned worktrees | Complete |
 
 ---
 
