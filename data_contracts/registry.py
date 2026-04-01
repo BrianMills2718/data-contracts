@@ -138,31 +138,44 @@ class BoundaryRegistry:
         return compatible
 
     def check_all(self) -> list[dict]:
-        """Check compatibility across all registered producer→consumer pairs.
+        """Check compatibility across declared producer→consumer pairs.
 
+        For each boundary, checks if its output schema satisfies the input
+        schema of boundaries consumed by its declared consumer projects.
+        Only checks actual declared relationships, not all pairs.
+        
         Returns list of violations.
         """
         violations = []
-        for b in self._boundaries.values():
-            if not b.input_schema:
+        
+        # For each producer boundary, find consumer boundaries
+        for producer in self._boundaries.values():
+            if not producer.output_schema or not producer.consumer_projects:
                 continue
-            required = set(b.input_schema.get("required", []))
-            input_props = b.input_schema.get("properties", {})
-
-            # Check each consumer against known producers
-            for consumer_name in b.consumer_projects:
-                producer = self.get(consumer_name)
-                if not producer or not producer.output_schema:
-                    continue
-                output_props = set(producer.output_schema.get("properties", {}).keys())
-                missing = required - output_props
-                if missing:
-                    violations.append({
-                        "consumer": b.name,
-                        "producer": consumer_name,
-                        "missing_fields": list(missing),
-                        "severity": "breaking",
-                    })
+            output_props = set(producer.output_schema.get("properties", {}).keys())
+            
+            # Find boundaries where producer_project matches one of our consumers
+            for consumer_project in producer.consumer_projects:
+                for consumer in self._boundaries.values():
+                    if consumer.name == producer.name:
+                        continue
+                    if consumer.producer_project != consumer_project:
+                        continue
+                    if not consumer.input_schema:
+                        continue
+                    
+                    required = set(consumer.input_schema.get("required", []))
+                    if not required:
+                        continue
+                    
+                    missing = required - output_props
+                    if missing:
+                        violations.append({
+                            "producer": producer.name,
+                            "consumer": consumer.name,
+                            "missing_fields": list(missing),
+                            "severity": "breaking",
+                        })
         return violations
 
 
