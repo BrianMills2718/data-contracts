@@ -73,9 +73,9 @@ consumers accumulate around it.
 | Step | What | Status |
 |------|------|--------|
 | 1 | Freeze local plan/index/template before installer writes | Complete |
-| 2 | Normalize `CLAUDE.md` to the shared renderer contract and add a truthful contributor entry surface | In progress |
-| 3 | Run the shared governed-repo installer in this clean worktree | Not started |
-| 4 | Re-audit and do one bounded manual followthrough for ownership, linkage, and README/Makefile gaps | Not started |
+| 2 | Normalize `CLAUDE.md` to the shared renderer contract and add a truthful contributor entry surface | Complete |
+| 3 | Run the shared governed-repo installer in this clean worktree | Complete |
+| 4 | Re-audit and do one bounded manual followthrough for ownership, linkage, and README/Makefile gaps | Complete |
 | 5 | Verify, document uncertainties, and close the wave without enabling sanctioned worktrees | Not started |
 
 ---
@@ -105,6 +105,8 @@ consumers accumulate around it.
 
 - real consumer evidence already exists in `llm_client`, `onto-canon6`, and prompt-eval schema-registration code
 - `data_contracts` is small enough that adding a first README and a minimal Makefile is acceptable if that is the cleanest way to make the local contract truthful
+- the shared installer correctly established a governed mechanical baseline, but its default worktree-coordination payload was explicitly removed because this wave keeps sanctioned worktrees out of scope
+- making `make check` truthful required fixing a small existing lint/type debt in `src/` and `tests/` rather than documenting a knowingly broken local gate
 
 ## Ongoing Maintenance Rule
 

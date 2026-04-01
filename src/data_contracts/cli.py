@@ -1,6 +1,10 @@
 """CLI: python -m data_contracts list | check | matrix | pipeline"""
+
 from __future__ import annotations
-import argparse, sys
+
+import argparse
+import sys
+
 from data_contracts.checker import check_compatibility
 from data_contracts.registry import ContractRegistry
 
@@ -24,8 +28,12 @@ def cmd_check(_args: argparse.Namespace) -> None:
             for con in boundaries:
                 if con.name == prod.name or con.producer != cp or not con.input_schema:
                     continue
+                producer_schema = prod.output_schema
+                consumer_schema = con.input_schema
+                if producer_schema is None or consumer_schema is None:
+                    continue
                 checked += 1
-                for v in check_compatibility(prod.output_schema, con.input_schema, prod.name, con.name):
+                for v in check_compatibility(producer_schema, consumer_schema, prod.name, con.name):
                     total_violations += 1
                     print(f"  VIOLATION [{v.severity}] {v.producer} -> {v.consumer}: "
                           f"{v.kind} on '{v.field}' -- {v.detail}")
@@ -79,8 +87,15 @@ def cmd_matrix(_args: argparse.Namespace) -> None:
             if prod.name == con.name:
                 cell = "."
             else:
+                producer_schema = prod.output_schema
+                consumer_schema = con.input_schema
+                if producer_schema is None or consumer_schema is None:
+                    cell = "?"
+                    row += cell.rjust(col_w + 1)
+                    continue
                 violations = check_compatibility(
-                    prod.output_schema, con.input_schema,
+                    producer_schema,
+                    consumer_schema,
                     producer_name=prod.name, consumer_name=con.name,
                 )
                 cell = "OK" if not violations else f"X{len(violations)}"

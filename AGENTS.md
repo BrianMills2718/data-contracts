@@ -1,5 +1,21 @@
 # data_contracts
 
+<!-- GENERATED FILE: DO NOT EDIT DIRECTLY -->
+<!-- generated_by: scripts/meta/render_agents_md.py -->
+<!-- canonical_claude: CLAUDE.md -->
+<!-- canonical_relationships: scripts/relationships.yaml -->
+<!-- canonical_relationships_sha256: b0cf04cb9ddf -->
+<!-- sync_check: python scripts/meta/check_agents_sync.py --check -->
+
+This file is a generated Codex-oriented projection of repo governance.
+Edit the canonical sources instead of editing this file directly.
+
+Canonical governance sources:
+- `CLAUDE.md` — human-readable project rules, workflow, and references
+- `scripts/relationships.yaml` — machine-readable ADR, coupling, and required-reading graph
+
+## Purpose
+
 Typed data contracts for cross-project boundaries. This repo owns the shared
 boundary model layer: strict Pydantic models at project seams, compatibility
 checking, boundary registration, and lightweight runtime observability for
@@ -16,7 +32,13 @@ python -m data_contracts matrix
 python -m data_contracts pipeline step_a step_b
 ```
 
-## Principles
+## Operating Rules
+
+This projection keeps the highest-signal rules in always-on Codex context.
+For full project structure, detailed terminology, and any rule omitted here,
+read `CLAUDE.md` directly.
+
+### Principles
 
 1. Every function crossing a project boundary uses `@boundary` or an equivalent
    explicit registry entry.
@@ -30,7 +52,7 @@ python -m data_contracts pipeline step_a step_b
 6. Repo-local ownership and migration posture live in
    `docs/ops/CAPABILITY_DECOMPOSITION.md`.
 
-## Workflow
+### Workflow
 
 ### Core API
 
@@ -60,6 +82,10 @@ violations = check_compatibility(producer_schema, consumer_schema)
 
 The local registry auto-populates at import time and persists to
 `~/projects/data/contract_registry.json`.
+
+## Machine-Readable Governance
+
+`scripts/relationships.yaml` is the source of truth for machine-readable governance in this repo: ADR coupling, required-reading edges, and doc-code linkage. This generated file does not inline that graph; it records the canonical path and sync marker, then points operators and validators back to the source graph. Prefer deterministic validators over prompt-only memory when those scripts are available.
 
 ## References
 
