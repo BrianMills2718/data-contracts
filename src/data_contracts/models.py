@@ -48,15 +48,15 @@ class ContractInfo(BaseModel):
 
     name: str = Field(description="Unique boundary name, e.g. 'onto-canon6.digimon_export'")
     version: str = Field(default="0.1.0", description="Semantic version")
-    producer: str = Field(default="", description="Project that produces data")
-    consumers: list[str] = Field(default_factory=list, description="Projects that consume data")
+    producer: str = Field(default="", description="Project that produces data", validation_alias="producer_project")
+    consumers: list[str] = Field(default_factory=list, description="Projects that consume data", validation_alias="consumer_projects")
     input_schema: dict[str, Any] | None = Field(default=None, description="JSON schema of input")
     output_schema: dict[str, Any] | None = Field(default=None, description="JSON schema of output")
     description: str = Field(default="", description="Human-readable description")
     first_registered: str = Field(default="", description="ISO timestamp of first registration")
     call_count: int = Field(default=0, description="Total calls")
     error_count: int = Field(default=0, description="Failed calls")
-    model_config = {"extra": "ignore"}
+    model_config = {"extra": "ignore", "populate_by_name": True}
 
 
 class ContractViolation(BaseModel):
