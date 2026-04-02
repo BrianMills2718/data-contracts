@@ -18,10 +18,8 @@ from __future__ import annotations
 import json
 import logging
 import subprocess
-import sys
-from pathlib import Path
 
-from data_contracts.checker import check_breaking_changes, check_compatibility
+from data_contracts.checker import check_compatibility
 from data_contracts.registry import ContractRegistry
 
 logger = logging.getLogger(__name__)
