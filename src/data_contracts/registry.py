@@ -61,11 +61,26 @@ class ContractRegistry:
             json.dump(data, f, indent=2)
 
     def register(
-        self, name: str, input_type: type | None = None, output_type: type | None = None,
-        version: str = "0.1.0", producer: str = "", consumers: list[str] | None = None,
+        self, name: str | ContractInfo, input_type: type | None = None,
+        output_type: type | None = None, version: str = "0.1.0",
+        producer: str = "", consumers: list[str] | None = None,
         description: str = "",
     ) -> ContractInfo:
-        """Register a boundary. Updates existing entry, preserving call counts."""
+        """Register a boundary. Updates existing entry, preserving call counts.
+
+        Accepts either keyword args OR a pre-built ContractInfo as the first arg
+        (for backward compat with prompt_eval's BoundaryInfo registration pattern).
+        """
+        if isinstance(name, ContractInfo):
+            info = name
+            existing = self._boundaries.get(info.name)
+            if existing:
+                info.first_registered = existing.first_registered
+                info.call_count = existing.call_count
+                info.error_count = existing.error_count
+            self._boundaries[info.name] = info
+            return info
+
         from pydantic import BaseModel
         input_schema = input_type.model_json_schema() if input_type and isinstance(input_type, type) and issubclass(input_type, BaseModel) else None
         output_schema = output_type.model_json_schema() if output_type and isinstance(output_type, type) and issubclass(output_type, BaseModel) else None
