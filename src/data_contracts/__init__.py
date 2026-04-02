@@ -12,6 +12,7 @@ from data_contracts.models import (
     ContractInfo,
     ContractViolation,
     ContractViolationError,
+    PipelineDeclaration,
     ProvenanceRecord,
 )
 from data_contracts.registry import ContractRegistry, registry
@@ -23,6 +24,7 @@ __all__ = [
     "ContractRegistry",
     "ContractViolation",
     "ContractViolationError",
+    "PipelineDeclaration",
     "ProvenanceRecord",
     "boundary",
     "check_compatibility",

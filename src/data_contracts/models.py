@@ -80,6 +80,13 @@ class BoundaryResult(BaseModel):
     timestamp: str = Field(default="", description="ISO timestamp of the call")
 
 
+class PipelineDeclaration(BaseModel):
+    """An explicitly declared data pipeline connecting ordered boundary steps."""
+
+    name: str = Field(description="Human-readable pipeline name, e.g. 'research_to_digimon'")
+    steps: list[str] = Field(description="Ordered boundary names forming the pipeline")
+
+
 class ContractViolationError(Exception):
     """Raised when data at a boundary fails Pydantic validation (fail loud).
 

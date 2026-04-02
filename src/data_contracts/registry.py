@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from data_contracts.models import ContractInfo, ContractViolation
+from data_contracts.models import ContractInfo, ContractViolation, PipelineDeclaration
 
 # Backwards-compatible alias: prompt_eval uses BoundaryInfo
 BoundaryInfo = ContractInfo
@@ -28,6 +28,7 @@ class ContractRegistry:
 
     def __init__(self, persist_path: Path | None = None) -> None:
         self._boundaries: dict[str, ContractInfo] = {}
+        self._pipelines: list[PipelineDeclaration] = []
         self._persist_path = persist_path or REGISTRY_PATH
         self._load()
 
@@ -47,6 +48,8 @@ class ContractRegistry:
                     first_registered=d.get("first_registered", ""),
                     call_count=d.get("call_count", 0), error_count=d.get("error_count", 0),
                 )
+            for p in data.get("pipelines", []):
+                self._pipelines.append(PipelineDeclaration(name=p["name"], steps=p["steps"]))
         except (json.JSONDecodeError, OSError) as e:
             logger.warning("Could not load contract registry: %s", e)
 
@@ -55,6 +58,7 @@ class ContractRegistry:
         self._persist_path.parent.mkdir(parents=True, exist_ok=True)
         data: dict[str, Any] = {
             "contracts": {n: i.model_dump(exclude={"name"}) for n, i in self._boundaries.items()},
+            "pipelines": [p.model_dump() for p in self._pipelines],
             "updated_at": datetime.now().isoformat(),
         }
         with open(self._persist_path, "w") as f:
@@ -162,6 +166,30 @@ class ContractRegistry:
             if not violations:
                 compatible.append(info)
         return compatible
+
+    def declare_pipeline(self, name: str, steps: list[str]) -> PipelineDeclaration:
+        """Declare an explicit data pipeline connecting ordered boundary steps.
+
+        Replaces any existing pipeline with the same name. Persists to disk.
+        """
+        self._pipelines = [p for p in self._pipelines if p.name != name]
+        decl = PipelineDeclaration(name=name, steps=steps)
+        self._pipelines.append(decl)
+        self.save()
+        return decl
+
+    def list_pipelines(self) -> list[PipelineDeclaration]:
+        """Return all declared pipelines."""
+        return list(self._pipelines)
+
+    def remove_pipeline(self, name: str) -> bool:
+        """Remove a declared pipeline by name. Returns True if it existed."""
+        before = len(self._pipelines)
+        self._pipelines = [p for p in self._pipelines if p.name != name]
+        if len(self._pipelines) < before:
+            self.save()
+            return True
+        return False
 
     def validate_pipeline(self, steps: list[str]) -> list[ContractViolation]:
         """Validate that an ordered list of boundaries forms a compatible pipeline.

@@ -18,29 +18,23 @@ def cmd_list(_args: argparse.Namespace) -> None:
 
 
 def cmd_check(_args: argparse.Namespace) -> None:
-    """Check compatibility across all declared producer-consumer pairs."""
-    boundaries = ContractRegistry().list_all()
-    total_violations = checked = 0
-    for prod in boundaries:
-        if not prod.output_schema or not prod.consumers:
-            continue
-        for cp in prod.consumers:
-            for con in boundaries:
-                if con.name == prod.name or con.producer != cp or not con.input_schema:
-                    continue
-                producer_schema = prod.output_schema
-                consumer_schema = con.input_schema
-                if producer_schema is None or consumer_schema is None:
-                    continue
-                checked += 1
-                for v in check_compatibility(producer_schema, consumer_schema, prod.name, con.name):
-                    total_violations += 1
-                    print(f"  VIOLATION [{v.severity}] {v.producer} -> {v.consumer}: "
-                          f"{v.kind} on '{v.field}' -- {v.detail}")
+    """Check compatibility across all explicitly declared pipelines."""
+    reg = ContractRegistry()
+    pipelines = reg.list_pipelines()
+    if not pipelines:
+        print("No declared pipelines. Use 'declare-pipeline' to register one.")
+        return
+    total_violations = 0
+    for pipeline in pipelines:
+        violations = reg.validate_pipeline(pipeline.steps)
+        for v in violations:
+            total_violations += 1
+            print(f"  VIOLATION [{v.severity}] {v.producer} -> {v.consumer}: "
+                  f"{v.kind} on '{v.field}' -- {v.detail}")
     if total_violations == 0:
-        print(f"All clear. Checked {checked} pair(s), 0 violations.")
+        print(f"All clear. Checked {len(pipelines)} pipeline(s), 0 violations.")
     else:
-        print(f"\n{total_violations} violation(s) across {checked} pair(s).")
+        print(f"\n{total_violations} violation(s) across {len(pipelines)} pipeline(s).")
         sys.exit(1)
 
 
@@ -107,6 +101,13 @@ def cmd_matrix(_args: argparse.Namespace) -> None:
     print("Legend: OK=compatible  X<n>=violations  .=self")
 
 
+def cmd_declare_pipeline(args: argparse.Namespace) -> None:
+    """Declare and persist an explicit pipeline of boundary steps."""
+    reg = ContractRegistry()
+    decl = reg.declare_pipeline(args.name, args.steps)
+    print(f"Declared pipeline '{decl.name}': {' -> '.join(decl.steps)}")
+
+
 def cmd_pipeline(args: argparse.Namespace) -> None:
     """Validate a pipeline of boundary steps for schema compatibility."""
     steps = args.steps
@@ -134,12 +135,18 @@ def main() -> None:
     p = argparse.ArgumentParser(prog="data_contracts", description="Typed data contracts")
     sub = p.add_subparsers(dest="command")
     sub.add_parser("list", help="List all registered boundaries")
-    sub.add_parser("check", help="Check compatibility across producer-consumer pairs")
+    sub.add_parser("check", help="Check compatibility across all declared pipelines")
     sub.add_parser("matrix", help="Render NxN compatibility matrix")
-    pipe_p = sub.add_parser("pipeline", help="Validate a pipeline of boundary steps")
+    pipe_p = sub.add_parser("pipeline", help="Validate an ad-hoc pipeline of boundary steps")
     pipe_p.add_argument("steps", nargs="+", help="Ordered boundary names forming the pipeline")
+    decl_p = sub.add_parser("declare-pipeline", help="Declare and persist a named pipeline")
+    decl_p.add_argument("name", help="Pipeline name")
+    decl_p.add_argument("steps", nargs="+", help="Ordered boundary names forming the pipeline")
     args = p.parse_args()
-    cmds = {"list": cmd_list, "check": cmd_check, "matrix": cmd_matrix, "pipeline": cmd_pipeline}
+    cmds = {
+        "list": cmd_list, "check": cmd_check, "matrix": cmd_matrix,
+        "pipeline": cmd_pipeline, "declare-pipeline": cmd_declare_pipeline,
+    }
     if args.command in cmds:
         cmds[args.command](args)
     else:

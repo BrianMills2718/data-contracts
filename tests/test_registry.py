@@ -16,6 +16,7 @@ def _make_registry() -> ContractRegistry:
     """Create a test registry without loading from disk."""
     reg = ContractRegistry.__new__(ContractRegistry)
     reg._boundaries = {}
+    reg._pipelines = []
     reg._persist_path = None  # type: ignore[assignment]
     return reg
 
@@ -136,6 +137,18 @@ class TestPersistence:
         assert info is not None
         assert info.version == "1.0.0"
         assert info.call_count == 1
+
+    def test_pipeline_round_trip(self, tmp_path):
+        """Declared pipelines persist and reload correctly."""
+        path = tmp_path / "registry.json"
+        reg = ContractRegistry(persist_path=path)
+        reg.declare_pipeline("my_pipeline", ["step_a", "step_b", "step_c"])
+
+        reg2 = ContractRegistry(persist_path=path)
+        pipelines = reg2.list_pipelines()
+        assert len(pipelines) == 1
+        assert pipelines[0].name == "my_pipeline"
+        assert pipelines[0].steps == ["step_a", "step_b", "step_c"]
 
     def test_clear(self):
         """clear() removes all boundaries."""
@@ -293,3 +306,64 @@ class TestValidatePipeline:
         # validate_pipeline with < 2 steps returns empty (no pairs to check)
         violations = reg.validate_pipeline(["only_step"])
         assert violations == []
+
+
+class TestDeclarePipeline:
+    def test_declare_and_list(self):
+        """Declared pipeline appears in list_pipelines."""
+        reg = _make_registry()
+        reg._persist_path = None  # disable auto-save
+        # Patch save to no-op so declare_pipeline doesn't crash without a path
+        reg.save = lambda: None  # type: ignore[method-assign]
+        reg.declare_pipeline("my_pipeline", ["a", "b", "c"])
+        pipelines = reg.list_pipelines()
+        assert len(pipelines) == 1
+        assert pipelines[0].name == "my_pipeline"
+        assert pipelines[0].steps == ["a", "b", "c"]
+
+    def test_declare_replaces_existing(self):
+        """Re-declaring a pipeline with same name replaces it."""
+        reg = _make_registry()
+        reg.save = lambda: None  # type: ignore[method-assign]
+        reg.declare_pipeline("pipe", ["a", "b"])
+        reg.declare_pipeline("pipe", ["x", "y", "z"])
+        pipelines = reg.list_pipelines()
+        assert len(pipelines) == 1
+        assert pipelines[0].steps == ["x", "y", "z"]
+
+    def test_remove_pipeline(self):
+        """remove_pipeline deletes by name and returns True; unknown returns False."""
+        reg = _make_registry()
+        reg.save = lambda: None  # type: ignore[method-assign]
+        reg.declare_pipeline("pipe", ["a", "b"])
+        assert reg.remove_pipeline("pipe") is True
+        assert reg.list_pipelines() == []
+        assert reg.remove_pipeline("pipe") is False
+
+
+class TestRunChecks:
+    def test_no_pipelines_returns_zero(self):
+        """run_checks with no declared pipelines exits 0."""
+        from data_contracts.check_schemas import run_checks
+        reg = _make_registry()
+        assert run_checks(registry=reg) == 0
+
+    def test_violations_return_one(self):
+        """run_checks with a declared pipeline having violations exits 1."""
+        from data_contracts.check_schemas import run_checks
+        reg = _make_registry()
+        reg.save = lambda: None  # type: ignore[method-assign]
+        reg.register(name="step1", output_type=ProducerOut)
+        reg.register(name="step2", input_type=IncompatibleIn)
+        reg.declare_pipeline("test_pipe", ["step1", "step2"])
+        assert run_checks(registry=reg) == 1
+
+    def test_compatible_pipeline_returns_zero(self):
+        """run_checks with a compatible declared pipeline exits 0."""
+        from data_contracts.check_schemas import run_checks
+        reg = _make_registry()
+        reg.save = lambda: None  # type: ignore[method-assign]
+        reg.register(name="step1", output_type=ProducerOut)
+        reg.register(name="step2", input_type=CompatibleIn)
+        reg.declare_pipeline("good_pipe", ["step1", "step2"])
+        assert run_checks(registry=reg) == 0
