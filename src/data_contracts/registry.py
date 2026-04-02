@@ -15,6 +15,9 @@ from typing import Any
 
 from data_contracts.models import ContractInfo, ContractViolation
 
+# Backwards-compatible alias: prompt_eval uses BoundaryInfo
+BoundaryInfo = ContractInfo
+
 logger = logging.getLogger(__name__)
 
 REGISTRY_PATH = Path.home() / "projects" / "data" / "contract_registry.json"
