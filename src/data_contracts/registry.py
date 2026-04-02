@@ -103,6 +103,10 @@ class ContractRegistry:
         """List all registered boundaries."""
         return list(self._boundaries.values())
 
+    def list_by_project(self, project: str) -> list[ContractInfo]:
+        """Alias for list_by_producer (backward compat)."""
+        return self.list_by_producer(project)
+
     def list_by_producer(self, producer: str) -> list[ContractInfo]:
         """List boundaries for a specific producer project."""
         return [b for b in self._boundaries.values() if b.producer == producer]
