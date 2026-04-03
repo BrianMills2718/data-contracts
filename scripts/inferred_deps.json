@@ -1,0 +1,238 @@
+{
+  "repo": "data_contracts",
+  "repo_path": "/home/brian/projects/data_contracts",
+  "total_edges": 33,
+  "edges": [
+    {
+      "source": "meta-process.yaml",
+      "target": "docs/ops/CAPABILITY_DECOMPOSITION.md",
+      "type": "file_path_reference",
+      "evidence": "source_of_record: \"docs/ops/CAPABILITY_DECOMPOSITION.md\"",
+      "line": 23
+    },
+    {
+      "source": "meta-process.yaml",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "config_file: \"scripts/relationships.yaml\"",
+      "line": 38
+    },
+    {
+      "source": "scripts/sync_plan_status.py",
+      "target": "scripts/meta/sync_plan_status.py",
+      "type": "file_path_reference",
+      "evidence": "\"\"\"Compatibility wrapper for scripts/meta/sync_plan_status.py.\"\"\"",
+      "line": 2
+    },
+    {
+      "source": "scripts/check_doc_coupling.py",
+      "target": "scripts/meta/check_doc_coupling.py",
+      "type": "file_path_reference",
+      "evidence": "- scripts/meta/check_doc_coupling.py",
+      "line": 5
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": "CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "- CLAUDE.md",
+      "line": 17
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": "README.md",
+      "type": "file_path_reference",
+      "evidence": "- README.md",
+      "line": 18
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": "docs/plans/CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "- docs/plans/CLAUDE.md",
+      "line": 19
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": "docs/ops/CAPABILITY_DECOMPOSITION.md",
+      "type": "file_path_reference",
+      "evidence": "- docs/ops/CAPABILITY_DECOMPOSITION.md",
+      "line": 27
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": "meta-process.yaml",
+      "type": "file_path_reference",
+      "evidence": "- meta-process.yaml",
+      "line": 28
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": ".claude/settings.json",
+      "type": "file_path_reference",
+      "evidence": "- .claude/settings.json",
+      "line": 49
+    },
+    {
+      "source": "scripts/relationships.yaml",
+      "target": "docs/plans/01_governed-baseline-and-capability-ownership-rollout.md",
+      "type": "file_path_reference",
+      "evidence": "- docs/plans/01_governed-baseline-and-capability-ownership-rollout.md",
+      "line": 55
+    },
+    {
+      "source": "scripts/meta/file_context.py",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "\"\"\"Load and print context relationships for files from scripts/relationships.yaml.",
+      "line": 2
+    },
+    {
+      "source": "scripts/meta/sync_plan_status.py",
+      "target": "scripts/sync_plan_status.py",
+      "type": "file_path_reference",
+      "evidence": "python scripts/sync_plan_status.py --check",
+      "line": 6
+    },
+    {
+      "source": "scripts/meta/sync_plan_status.py",
+      "target": "docs/plans/CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "2. Index table in docs/plans/CLAUDE.md",
+      "line": 19
+    },
+    {
+      "source": "scripts/meta/sync_plan_status.py",
+      "target": "CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "INDEX_FILE = PLANS_DIR / \"CLAUDE.md\"",
+      "line": 31
+    },
+    {
+      "source": "scripts/meta/check_agents_sync.py",
+      "target": "AGENTS.md",
+      "type": "file_path_reference",
+      "evidence": "\"\"\"Check that generated AGENTS.md is in sync with canonical governance inputs.",
+      "line": 2
+    },
+    {
+      "source": "scripts/meta/check_agents_sync.py",
+      "target": "scripts/meta/render_agents_md.py",
+      "type": "file_path_reference",
+      "evidence": "deterministic output of ``render_agents_md.py``. It is intended for local",
+      "line": 5
+    },
+    {
+      "source": "scripts/meta/check_agents_sync.py",
+      "target": "CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "help=\"Repo root containing CLAUDE.md and scripts/relationships.yaml\",",
+      "line": 27
+    },
+    {
+      "source": "scripts/meta/check_agents_sync.py",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "help=\"Repo root containing CLAUDE.md and scripts/relationships.yaml\",",
+      "line": 27
+    },
+    {
+      "source": "scripts/meta/check_doc_coupling.py",
+      "target": "scripts/check_doc_coupling.py",
+      "type": "file_path_reference",
+      "evidence": "python scripts/check_doc_coupling.py [--base BASE_REF] [--suggest]",
+      "line": 5
+    },
+    {
+      "source": "scripts/meta/check_doc_coupling.py",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "# New unified format: scripts/relationships.yaml",
+      "line": 49
+    },
+    {
+      "source": "scripts/meta/check_doc_coupling.py",
+      "target": "CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "# Plain filenames like \"CLAUDE.md\" must match the full path to avoid",
+      "line": 142
+    },
+    {
+      "source": "scripts/meta/check_doc_coupling.py",
+      "target": "docs/plans/CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "# false positives where docs/plans/CLAUDE.md matches root CLAUDE.md.",
+      "line": 143
+    },
+    {
+      "source": "scripts/meta/validate_plan.py",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "default=\"scripts/relationships.yaml\",",
+      "line": 497
+    },
+    {
+      "source": "scripts/meta/render_agents_md.py",
+      "target": "AGENTS.md",
+      "type": "file_path_reference",
+      "evidence": "\"\"\"Render a generated AGENTS.md projection from canonical repo governance.",
+      "line": 2
+    },
+    {
+      "source": "scripts/meta/render_agents_md.py",
+      "target": "CLAUDE.md",
+      "type": "file_path_reference",
+      "evidence": "- ``CLAUDE.md`` for human-readable governance and workflow policy",
+      "line": 8
+    },
+    {
+      "source": "scripts/meta/render_agents_md.py",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "- ``scripts/relationships.yaml`` for machine-readable coupling, ADR, and",
+      "line": 9
+    },
+    {
+      "source": "scripts/meta/render_agents_md.py",
+      "target": "scripts/meta/check_agents_sync.py",
+      "type": "file_path_reference",
+      "evidence": "ROOT / \"scripts\" / \"meta\" / \"check_agents_sync.py\",",
+      "line": 182
+    },
+    {
+      "source": "scripts/meta/hook_log.py",
+      "target": "scripts/relationships.yaml",
+      "type": "file_path_reference",
+      "evidence": "DEFAULT_CONFIG = Path(\"scripts/relationships.yaml\")",
+      "line": 26
+    },
+    {
+      "source": "docs/ops/CAPABILITY_DECOMPOSITION.md",
+      "target": "docs/plans/01_governed-baseline-and-capability-ownership-rollout.md",
+      "type": "markdown_link",
+      "evidence": "- [`../plans/01_governed-baseline-and-capability-ownership-rollout.md`](../plans/01_governed-baseline-and-capability-own",
+      "line": 13
+    },
+    {
+      "source": "docs/ops/CAPABILITY_DECOMPOSITION.md",
+      "target": "README.md",
+      "type": "markdown_link",
+      "evidence": "- [`../../README.md`](../../README.md)",
+      "line": 14
+    },
+    {
+      "source": "docs/ops/CAPABILITY_DECOMPOSITION.md",
+      "target": "CLAUDE.md",
+      "type": "markdown_link",
+      "evidence": "- [`../../CLAUDE.md`](../../CLAUDE.md)",
+      "line": 15
+    },
+    {
+      "source": "docs/plans/CLAUDE.md",
+      "target": "docs/plans/01_governed-baseline-and-capability-ownership-rollout.md",
+      "type": "markdown_link",
+      "evidence": "| 1 | [Governed baseline and capability ownership rollout](01_governed-baseline-and-capability-ownership-rollout.md) | H",
+      "line": 9
+    }
+  ]
+}
