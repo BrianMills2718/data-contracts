@@ -39,9 +39,17 @@ def _get_pydantic_models(func: Callable[..., Any]) -> tuple[type[BaseModel] | No
 def _try_log_observability(boundary_name: str, success: bool, latency_ms: float, error: str | None = None) -> None:
     """Log to llm_client observability if available. No-op if llm_client not installed."""
     try:
-        from llm_client.observability import log_call  # type: ignore[import-not-found]
-        log_call(call_type="boundary", task=boundary_name, trace_id=boundary_name,
-                 success=success, latency_ms=latency_ms, cost=0.0, error=error)
+        from llm_client.io_log import log_call  # type: ignore[import-not-found]
+        # Keep model explicit and use task as the contract name. `caller` marks these
+        # events as data-boundary telemetry so consumers can distinguish them from LLM calls.
+        log_call(
+            model="boundary-observability",
+            task=boundary_name,
+            caller="boundary",
+            trace_id=boundary_name,
+            error=Exception(error) if error else None,
+            latency_s=latency_ms / 1000,
+        )
     except (ImportError, Exception):
         pass
 
