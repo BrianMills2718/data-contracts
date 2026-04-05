@@ -36,18 +36,35 @@ def _get_pydantic_models(func: Callable[..., Any]) -> tuple[type[BaseModel] | No
     return input_model, output_model
 
 
-def _try_log_observability(boundary_name: str, success: bool, latency_ms: float, error: str | None = None) -> None:
+def _try_log_observability(
+    boundary_name: str,
+    success: bool,
+    latency_ms: float,
+    error: str | None = None,
+    exc: BaseException | None = None,
+) -> None:
     """Log to llm_client observability if available. No-op if llm_client not installed."""
     try:
         from llm_client.io_log import log_call  # type: ignore[import-not-found]
         # Keep model explicit and use task as the contract name. `caller` marks these
         # events as data-boundary telemetry so consumers can distinguish them from LLM calls.
+        # Pass the original exception to preserve error_type; fall back to a wrapped string
+        # only when no original exception is available.
+        log_error: Exception | None = None
+        log_error_type: str | None = None
+        if exc is not None:
+            log_error = exc if isinstance(exc, Exception) else Exception(str(exc))
+            log_error_type = type(exc).__name__
+        elif error:
+            log_error = Exception(error)
+            log_error_type = "Exception"
         log_call(
             model="boundary-observability",
             task=boundary_name,
             caller="boundary",
             trace_id=boundary_name,
-            error=Exception(error) if error else None,
+            error=log_error,
+            error_type=log_error_type,
             latency_s=latency_ms / 1000,
         )
     except (ImportError, Exception):
@@ -87,14 +104,14 @@ def boundary(
                 error_details = [dict(item) for item in e.errors()]
                 raise ContractViolationError(name, "output", error_details) from e
 
-        def _finalize(start: float, success: bool, error_msg: str | None) -> None:
+        def _finalize(start: float, success: bool, error_msg: str | None, exc: BaseException | None = None) -> None:
             registry.record_call(name, success)
-            _try_log_observability(name, success, (time.monotonic() - start) * 1000, error_msg)
+            _try_log_observability(name, success, (time.monotonic() - start) * 1000, error_msg, exc=exc)
 
         if asyncio.iscoroutinefunction(func):
             @functools.wraps(func)
             async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                start, success, error_msg = time.monotonic(), False, None
+                start, success, error_msg, caught_exc = time.monotonic(), False, None, None
                 try:
                     result = await func(*args, **kwargs)
                     _check_output(result)
@@ -104,13 +121,14 @@ def boundary(
                     raise
                 except Exception as exc:
                     error_msg = str(exc)
+                    caught_exc = exc
                     raise
                 finally:
-                    _finalize(start, success, error_msg)
+                    _finalize(start, success, error_msg, exc=caught_exc)
         else:
             @functools.wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> Any:
-                start, success, error_msg = time.monotonic(), False, None
+                start, success, error_msg, caught_exc = time.monotonic(), False, None, None
                 try:
                     result = func(*args, **kwargs)
                     _check_output(result)
@@ -120,9 +138,10 @@ def boundary(
                     raise
                 except Exception as exc:
                     error_msg = str(exc)
+                    caught_exc = exc
                     raise
                 finally:
-                    _finalize(start, success, error_msg)
+                    _finalize(start, success, error_msg, exc=caught_exc)
 
         wrapper._boundary_info = info  # type: ignore[attr-defined]
         return wrapper
