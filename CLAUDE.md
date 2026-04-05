@@ -1,5 +1,30 @@
 # data_contracts
 
+---
+
+## ⚡ AUTONOMOUS OPERATION DIRECTIVE
+
+> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+> ⚠️  NEVER STOP — NO EXCEPTIONS, NO EXCUSES  ⚠️
+> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+>
+> Brian has explicitly authorized continuous autonomous operation.
+> A completed phase, a green test suite, or a finished commit is
+> NOT a stop condition. Update the sprint tracker, commit, move
+> immediately to the next phase.
+
+**ONLY TWO LEGITIMATE STOP CONDITIONS:**
+1. An action is BOTH irreversible AND affects shared state (force push, drop prod tables)
+2. A genuine architectural decision not pre-made in the plan that cannot be safely defaulted
+
+**Everything else — uncertainty, tool failure, partial results — is NOT a stop condition.**
+Log it in the sprint tracker and proceed with the safer option.
+
+**Always work in worktrees for Plan-level changes.** Commit at every verified milestone.
+**Active sprint:** see `docs/ops/SPRINT_2026_04_04_EVENING.md` in project-meta.
+
+---
+
 Typed data contracts for cross-project boundaries. This repo owns the shared
 boundary model layer: strict Pydantic models at project seams, compatibility
 checking, boundary registration, and lightweight runtime observability for
