@@ -4,7 +4,7 @@
 <!-- generated_by: scripts/meta/render_agents_md.py -->
 <!-- canonical_claude: CLAUDE.md -->
 <!-- canonical_relationships: scripts/relationships.yaml -->
-<!-- canonical_relationships_sha256: b0cf04cb9ddf -->
+<!-- canonical_relationships_sha256: 1d1e75e0fe7d -->
 <!-- sync_check: python scripts/meta/check_agents_sync.py --check -->
 
 This file is a generated Codex-oriented projection of repo governance.
@@ -16,10 +16,7 @@ Canonical governance sources:
 
 ## Purpose
 
-Typed data contracts for cross-project boundaries. This repo owns the shared
-boundary model layer: strict Pydantic models at project seams, compatibility
-checking, boundary registration, and lightweight runtime observability for
-those crossings.
+data_contracts uses `CLAUDE.md` as canonical repo governance and workflow policy.
 
 ## Commands
 
