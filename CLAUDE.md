@@ -86,6 +86,18 @@ violations = check_compatibility(producer_schema, consumer_schema)
 The local registry auto-populates at import time and persists to
 `~/projects/data/contract_registry.json`.
 
+**Recovery**: if `contract_registry.json` is missing or stale (e.g., after a
+fresh clone or after adding a new `@boundary`-decorated project), regenerate it:
+
+```bash
+python ~/projects/ecosystem-ops/register_schemas.py
+```
+
+This re-imports every registered producer module, triggers all `@boundary`
+decorators, and writes a fresh registry. The file is not git-tracked — the
+`@boundary` decorator definitions in each project are the canonical source of
+truth. Never patch `contract_registry.json` by hand; edit the decorator instead.
+
 ## References
 
 - `README.md` — contributor entry point and consumer-facing summary

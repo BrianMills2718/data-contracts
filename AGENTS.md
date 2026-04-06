@@ -80,6 +80,18 @@ violations = check_compatibility(producer_schema, consumer_schema)
 The local registry auto-populates at import time and persists to
 `~/projects/data/contract_registry.json`.
 
+**Recovery**: if `contract_registry.json` is missing or stale (e.g., after a
+fresh clone or after adding a new `@boundary`-decorated project), regenerate it:
+
+```bash
+python ~/projects/ecosystem-ops/register_schemas.py
+```
+
+This re-imports every registered producer module, triggers all `@boundary`
+decorators, and writes a fresh registry. The file is not git-tracked — the
+`@boundary` decorator definitions in each project are the canonical source of
+truth. Never patch `contract_registry.json` by hand; edit the decorator instead.
+
 ## Machine-Readable Governance
 
 `scripts/relationships.yaml` is the source of truth for machine-readable governance in this repo: ADR coupling, required-reading edges, and doc-code linkage. This generated file does not inline that graph; it records the canonical path and sync marker, then points operators and validators back to the source graph. Prefer deterministic validators over prompt-only memory when those scripts are available.

@@ -10,8 +10,30 @@ from typing import Any
 from data_contracts.models import ContractViolation
 
 
-def _get_json_type(prop: dict[str, Any]) -> str | None:
-    """Extract the JSON schema type string from a property definition."""
+def _resolve_ref(prop: dict[str, Any], root_schema: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a JSON Schema $ref to its $defs entry in root_schema.
+
+    Only handles local $ref values of the form '#/$defs/<name>'.  Returns the
+    original prop unchanged if the ref cannot be resolved.
+    """
+    ref = prop.get("$ref", "")
+    if not ref.startswith("#/$defs/"):
+        return prop
+    def_name = ref[len("#/$defs/"):]
+    return root_schema.get("$defs", {}).get(def_name, prop)
+
+
+def _get_json_type(
+    prop: dict[str, Any],
+    root_schema: dict[str, Any] | None = None,
+) -> str | None:
+    """Extract the JSON schema type string from a property definition.
+
+    Resolves $ref references against root_schema when provided, so that nested
+    Pydantic model fields are not silently skipped by the type-mismatch check.
+    """
+    if "$ref" in prop and root_schema is not None:
+        prop = _resolve_ref(prop, root_schema)
     if "type" in prop:
         prop_type = prop["type"]
         return prop_type if isinstance(prop_type, str) else None
@@ -46,7 +68,8 @@ def check_compatibility(
 
     # Type mismatches on shared fields
     for field_name in set(producer_props) & set(consumer_props):
-        pt, ct = _get_json_type(producer_props[field_name]), _get_json_type(consumer_props[field_name])
+        pt = _get_json_type(producer_props[field_name], producer_schema)
+        ct = _get_json_type(consumer_props[field_name], consumer_schema)
         if pt and ct and pt != ct:
             if not set(pt.split("|")).issubset(set(ct.split("|"))):
                 violations.append(ContractViolation(
@@ -88,7 +111,8 @@ def check_breaking_changes(
 
     # Type changes on existing fields
     for field_name in set(old_props) & set(new_props):
-        ot, nt = _get_json_type(old_props[field_name]), _get_json_type(new_props[field_name])
+        ot = _get_json_type(old_props[field_name], old_schema)
+        nt = _get_json_type(new_props[field_name], new_schema)
         if ot and nt and ot != nt:
             violations.append(ContractViolation(
                 producer=boundary_name, consumer="(any)", field=field_name,
