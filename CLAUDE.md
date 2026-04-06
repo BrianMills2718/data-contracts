@@ -21,7 +21,7 @@
 Log it in the sprint tracker and proceed with the safer option.
 
 **Always work in worktrees for Plan-level changes.** Commit at every verified milestone.
-**Active sprint:** see `docs/ops/SPRINT_2026_04_04_EVENING.md` in project-meta.
+**Active sprint:** none (Plan #119 documentation-authority sprint in project-meta, Step 4 blocked).
 
 ---
 

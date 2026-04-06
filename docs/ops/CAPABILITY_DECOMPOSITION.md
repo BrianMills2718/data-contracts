@@ -62,6 +62,15 @@ Evidence-backed maintained consumers currently include:
   - adapters and interchange surfaces use `BoundaryModel` and `@boundary`
 - `prompt_eval`
   - schema-registration tooling uses the shared registry
+- `research_v3`
+  - `adapters.py` registers `research_v3.memo_export` and `research_v3.findings` via `@boundary`
+  - imported by `ecosystem-ops/register_schemas.py` (committed 2026-04-05)
+- `open_web_retrieval`
+  - `AsyncSourceFetcher.fetch()` and retrieval surfaces use `@boundary`
+  - imported by `ecosystem-ops/register_schemas.py`
+- `grounded-research`
+  - `grounded_research.verify.verify_disputes_tyler_v1` uses `@boundary(name="grounded-research.arbitration")`
+  - imported by `ecosystem-ops/register_schemas.py`
 
 Do not add a repo to the shared registry’s `known_consumers` list until there
 is a maintained import, integration, or committed docs/code evidence.

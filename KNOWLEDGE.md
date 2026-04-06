@@ -23,6 +23,18 @@ These are real cross-project boundary mismatches — the producer output schemas
 
 Pipeline `canon_to_digimon_full` (digimon_export_from_db → write_digimon_jsonl) passes clean.
 
+### 2026-04-05 — claude-code — resolved
+
+**Supersedes the 2026-04-02 schema-gotcha entry below.**
+
+`research_v3/adapters.py` now owns canonical `@boundary` definitions for
+`research_v3.memo_export` and `research_v3.findings`. `MemoExportResult`
+includes the required `memo_path: str` field. `ecosystem-ops/register_schemas.py`
+imports from `adapters` after injecting the research_v3 root onto `sys.path`.
+No manual `contract_registry.json` patching is needed. Pipeline check
+(`research_to_canon`) passes with 0 violations. The workaround described in the
+2026-04-02 entry is retired.
+
 ### 2026-04-02 — claude-code — best-practice
 
 Pipeline design rule: a declared pipeline must represent actual data flow, not
