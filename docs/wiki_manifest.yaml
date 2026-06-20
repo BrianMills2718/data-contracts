@@ -1,0 +1,23 @@
+version: 1
+project: data-contracts
+publish:
+  - path: README.md
+    type: ProjectOverview
+    title: Data Contracts Overview
+    tags: [shared-infrastructure, data-contracts, boundary-contracts]
+  - path: docs/SCHEMA_EVOLUTION.md
+    type: Methodology
+    title: Schema Evolution Convention
+    tags: [schema-evolution, compatibility, governance]
+  - path: docs/ops/CAPABILITY_DECOMPOSITION.md
+    type: Architecture
+    title: Data Contracts Capability Decomposition
+    tags: [capability-ownership, shared-infrastructure, governance]
+  - path: docs/plans/01_governed-baseline-and-capability-ownership-rollout.md
+    type: Plan
+    title: Data Contracts Governed Baseline Plan
+    tags: [governed-repo, rollout, capability-ownership]
+exclude:
+  - .pytest_cache/**
+  - docs/plans/CLAUDE.md
+  - docs/plans/TEMPLATE.md
