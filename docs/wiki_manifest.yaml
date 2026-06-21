@@ -5,6 +5,10 @@ publish:
     type: ProjectOverview
     title: Data Contracts Overview
     tags: [shared-infrastructure, data-contracts, boundary-contracts]
+  - path: docs/SCHEMA_DIFF_EXAMPLE.md
+    type: PortfolioGuide
+    title: Data Contracts Schema Diff Example
+    tags: [portfolio, data-contracts, governance]
   - path: docs/SCHEMA_EVOLUTION.md
     type: Methodology
     title: Schema Evolution Convention
