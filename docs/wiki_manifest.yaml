@@ -1,10 +1,34 @@
 version: 1
 project: data-contracts
 publish:
+  - path: PROJECT.md
+    type: ProjectDossier
+    title: Data Contracts Project Dossier
+    tags: [portfolio, shared-infrastructure, data-contracts, dossier]
   - path: README.md
     type: ProjectOverview
     title: Data Contracts Overview
     tags: [shared-infrastructure, data-contracts, boundary-contracts]
+  - path: docs/METHODOLOGY.md
+    type: Methodology
+    title: Data Contracts Methodology
+    tags: [portfolio, data-contracts, methodology]
+  - path: docs/ARTIFACTS.md
+    type: ArtifactRegister
+    title: Data Contracts Artifact Register
+    tags: [portfolio, data-contracts, artifacts]
+  - path: docs/VALIDATION.md
+    type: Validation
+    title: Data Contracts Validation Register
+    tags: [portfolio, data-contracts, validation]
+  - path: docs/CONCERNS.md
+    type: ConcernRegister
+    title: Data Contracts Concern Register
+    tags: [portfolio, data-contracts, concerns]
+  - path: docs/adr/0001_boundary_contract_substrate_scope.md
+    type: ADR
+    title: Keep Data Contracts A Boundary Contract Substrate
+    tags: [data-contracts, shared-infrastructure, architecture]
   - path: docs/SCHEMA_DIFF_EXAMPLE.md
     type: PortfolioGuide
     title: Data Contracts Schema Diff Example
